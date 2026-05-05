@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 import { Database, Table, Key, Trash2, ChevronRight, FileText, Layers, X } from "lucide-react";
 
 interface SidebarProps {
@@ -111,6 +112,28 @@ const sections: Section[] = [
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
 
+  // Lock body scroll when mobile drawer is open
+  useEffect(() => {
+    if (isOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isOpen]);
+
+  // Close on Escape key
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose?.();
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [isOpen, onClose]);
+
   return (
     <>
       {/* Desktop sidebar */}
@@ -131,7 +154,6 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
         }`}
       >
-        {/* Close button */}
         <div className="sticky top-0 z-10 flex justify-end p-2 bg-white dark:bg-zinc-900">
           <button
             onClick={onClose}

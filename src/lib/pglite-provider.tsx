@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState } from "react";
+import { AlertCircle } from "lucide-react";
 
 interface PGliteContextType {
   db: any | null;
@@ -43,6 +44,22 @@ export function PGliteProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <PGliteContext.Provider value={{ db, ready, error }}>
+      {error && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white dark:bg-zinc-900 border border-red-200 dark:border-red-900 rounded-lg p-6 shadow-lg max-w-md mx-4">
+            <div className="flex items-start gap-3">
+              <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+              <div>
+                <h3 className="font-semibold text-zinc-900 dark:text-zinc-100 mb-1">Database Initialization Failed</h3>
+                <p className="text-sm text-zinc-600 dark:text-zinc-400 mb-3">{error}</p>
+                <p className="text-xs text-zinc-500">
+                  Reload the page to try again. If the problem persists, try clearing IndexedDB from your browser&apos;s developer tools.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {children}
     </PGliteContext.Provider>
   );

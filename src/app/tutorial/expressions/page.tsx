@@ -1,3 +1,4 @@
+import { sharedSeedSql } from "@/lib/tutorial-seed";
 import { SQLRunner } from "@/components/sql-runner";
 import { TutorialSection, CodeBlock, Tip } from "@/components/tutorial-section";
 import { SubSection } from "@/components/tutorial-section";
@@ -9,6 +10,13 @@ export default function ExpressionsPage() {
         <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">SQL Expressions</h1>
         <p className="text-zinc-600 dark:text-zinc-400">CASE, COALESCE, NULLIF, string functions, and JSON/JSONB.</p>
       </div>
+
+      <TutorialSection id="setup" title="Setup Demo Data" description="These examples use tables from the Querying Data section. Run this once if they don't exist yet.">
+        <SQLRunner
+          hint="Creates categories, suppliers, and inventory_items with sample data."
+          initialSql={sharedSeedSql}
+        />
+      </TutorialSection>
 
       <TutorialSection id="case" title="CASE — Conditional Logic" description="Add if/then/else logic directly in your SQL queries.">
         <SubSection title="Basic Syntax">

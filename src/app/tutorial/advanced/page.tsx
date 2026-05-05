@@ -1,3 +1,4 @@
+import { sharedSeedSql } from "@/lib/tutorial-seed";
 import { SQLRunner } from "@/components/sql-runner";
 import { TutorialSection, CodeBlock, Tip, InfoBox } from "@/components/tutorial-section";
 import { SubSection } from "@/components/tutorial-section";
@@ -9,6 +10,13 @@ export default function AdvancedPage() {
         <h1 className="text-3xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">Advanced</h1>
         <p className="text-zinc-600 dark:text-zinc-400">Transactions, window functions, set operations, and views.</p>
       </div>
+
+      <TutorialSection id="setup" title="Setup Demo Data" description="These examples use tables from the Querying Data section. Run this once if they don't exist yet.">
+        <SQLRunner
+          hint="Creates categories, suppliers, and inventory_items with sample data."
+          initialSql={sharedSeedSql}
+        />
+      </TutorialSection>
 
       <TutorialSection id="transactions" title="Transactions — BEGIN, COMMIT, ROLLBACK" description="Group multiple statements into an atomic unit that either all succeed or all fail.">
         <SubSection title="What is a Transaction?">
@@ -39,14 +47,14 @@ ROLLBACK;  -- Undo everything in the transaction`}
             hint="This simulates a money transfer. Both account balances are updated atomically."
             initialSql={`CREATE TABLE IF NOT EXISTS accounts (
   id SERIAL PRIMARY KEY,
-  name VARCHAR(100) NOT NULL,
+  name VARCHAR(100) NOT NULL UNIQUE,
   balance NUMERIC(12, 2) NOT NULL DEFAULT 0
 );
 
 INSERT INTO accounts (name, balance) VALUES
   ('Alice', 1000.00),
   ('Bob', 500.00)
-ON CONFLICT DO NOTHING;
+ON CONFLICT (name) DO NOTHING;
 
 BEGIN;
   UPDATE accounts SET balance = balance - 200 WHERE name = 'Alice';

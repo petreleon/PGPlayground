@@ -52,6 +52,11 @@ export function SQLRunner({ initialSql = "", hint }: SQLRunnerProps) {
     }
   }, [db]);
 
+  // Fetch existing tables on mount / when db becomes ready
+  useEffect(() => {
+    fetchDbState();
+  }, [ready, fetchDbState]);
+
   const runSQL = useCallback(async () => {
     if (!db || !sql.trim()) return;
     setLoading(true);
@@ -60,36 +65,27 @@ export function SQLRunner({ initialSql = "", hint }: SQLRunnerProps) {
     setAffectedRows(null);
     
     try {
-      const trimmed = sql.trim();
-      if (/^\s*SELECT\s+/i.test(trimmed)) {
-        const res = await db.query(trimmed);
-        setResults([{
-          columns: res.fields.map((f: any) => f.name),
-          rows: res.rows,
-        }]);
-      } else {
-        const res = await db.exec(trimmed);
-        if (Array.isArray(res) && res.length > 0) {
-          const queryResults: QueryResult[] = [];
-          let totalAffected = 0;
-          for (const r of res) {
-            if (r.rows && r.rows.length > 0) {
-              queryResults.push({
-                columns: r.fields?.map((f: any) => f.name) ?? Object.keys(r.rows[0]),
-                rows: r.rows,
-              });
-            } else if (r.rows !== undefined) {
-              totalAffected += r.affectedRows || 0;
-            }
+      const res = await db.exec(sql.trim());
+      if (Array.isArray(res) && res.length > 0) {
+        const queryResults: QueryResult[] = [];
+        let totalAffected = 0;
+        for (const r of res) {
+          if (r.rows && r.rows.length > 0) {
+            queryResults.push({
+              columns: r.fields?.map((f: any) => f.name) ?? Object.keys(r.rows[0]),
+              rows: r.rows,
+            });
+          } else if (r.rows !== undefined) {
+            totalAffected += r.affectedRows || 0;
           }
-          if (queryResults.length > 0) {
-            setResults(queryResults);
-          } else {
-            setAffectedRows(totalAffected);
-          }
-        } else {
-          setAffectedRows(0);
         }
+        if (queryResults.length > 0) {
+          setResults(queryResults);
+        } else {
+          setAffectedRows(totalAffected);
+        }
+      } else {
+        setAffectedRows(0);
       }
       fetchDbState();
     } catch (e: any) {
@@ -98,6 +94,18 @@ export function SQLRunner({ initialSql = "", hint }: SQLRunnerProps) {
       setLoading(false);
     }
   }, [db, sql, fetchDbState]);
+
+  // Keyboard shortcut: Ctrl/Cmd + Enter to run
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        runSQL();
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [runSQL]);
 
   const resetDatabase = useCallback(async () => {
     if (!db) return;
@@ -128,6 +136,20 @@ export function SQLRunner({ initialSql = "", hint }: SQLRunnerProps) {
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;");
+
+    // Protect strings with placeholders so keyword highlighting skips them
+    const strings: string[] = [];
+    const comments: string[] = [];
+
+    html = html.replace(/('[^']*')/g, (match) => {
+      strings.push(match);
+      return `__STRING_${strings.length - 1}__`;
+    });
+
+    html = html.replace(/(--.*)$/gm, (match) => {
+      comments.push(match);
+      return `__COMMENT_${comments.length - 1}__`;
+    });
 
     const keywords = [
       "CREATE", "TABLE", "ALTER", "DROP", "COLUMN", "CONSTRAINT", "PRIMARY", "KEY",
@@ -160,18 +182,25 @@ export function SQLRunner({ initialSql = "", hint }: SQLRunnerProps) {
       "UUID", "ARRAY", "BYTEA", "TIMESTAMPTZ", "INTERVAL"
     ];
 
-    // Build a single regex from all keywords
     const kwPattern = keywords.map(k => `\\b${k}\\b`).join("|");
     const kwRegex = new RegExp(`(${kwPattern})`, "gi");
     html = html.replace(kwRegex, '<span class="text-purple-600 font-semibold dark:text-purple-400">$1</span>');
 
-    html = html.replace(/('[^']*')/g, '<span class="text-emerald-600 dark:text-emerald-400">$1</span>');
-    // Only color numbers that are not inside already-colored spans
+    // Restore strings
+    html = html.replace(/__STRING_(\d+)__/g, (_, i) => {
+      return `<span class="text-emerald-600 dark:text-emerald-400">${strings[i]}</span>`;
+    });
+
+    // Restore comments
+    html = html.replace(/__COMMENT_(\d+)__/g, (_, i) => {
+      return `<span class="text-zinc-400 italic">${comments[i]}</span>`;
+    });
+
+    // Numbers: only color standalone digits not already inside a span
     html = html.replace(/>(\d+)</g, '><span class="text-amber-600 dark:text-amber-400">$1</span><');
-    // Numbers at boundaries
-    html = html.replace(/^(\d+)</gm, '<span class="text-amber-600 dark:text-emerald-400">$1</span><');
+    html = html.replace(/^(\d+)</gm, '<span class="text-amber-600 dark:text-amber-400">$1</span><');
     html = html.replace(/>(\d+)$/gm, '><span class="text-amber-600 dark:text-amber-400">$1</span>');
-    html = html.replace(/(--.*)$/gm, '<span class="text-zinc-400 italic">$1</span>');
+
     return html;
   }, [sql]);
 
@@ -180,7 +209,6 @@ export function SQLRunner({ initialSql = "", hint }: SQLRunnerProps) {
     const el = textareaRef.current;
     const ov = overlayRef.current;
     if (!el || !ov) return;
-    // Reset height to auto so scrollHeight is the natural height
     el.style.height = "auto";
     el.style.height = `${Math.min(el.scrollHeight, 320)}px`;
 
