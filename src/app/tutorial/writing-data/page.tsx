@@ -241,8 +241,11 @@ WHERE product_name = 'USB-C Hub';`}
           </p>
           <SQLRunner
             hint="TRUNCATE is much faster for clearing a table entirely. DELETE logs each row removal."
-            initialSql={`SELECT product_name, price FROM products
-WHERE price < 30;`}
+            initialSql={`-- Try DELETE first (removes all rows, returns count):
+DELETE FROM products;
+
+-- Now TRUNCATE (faster, resets SERIAL):
+TRUNCATE TABLE products;`}
           />
           <InfoBox>
             <strong>TRUNCATE TABLE table_name;</strong> vs <strong>DELETE FROM table_name;</strong>
