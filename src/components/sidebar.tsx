@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Database, Table, Key, Trash2, ChevronRight } from "lucide-react";
+import { Database, Table, Key, Trash2, ChevronRight, FileText, Layers, Braces, Eye } from "lucide-react";
 
 const sections = [
   {
@@ -30,6 +30,48 @@ const sections = [
       { id: "primary-key", label: "Primary Keys", desc: "Creating and altering primary keys" },
       { id: "foreign-key", label: "Foreign Keys", desc: "Creating and altering foreign keys" },
       { id: "drop-constraint", label: "Drop Constraints", desc: "Removing keys and constraints" },
+    ],
+  },
+  {
+    title: "Writing Data",
+    icon: Table,
+    items: [
+      { id: "insert", label: "INSERT INTO", desc: "Adding rows to tables" },
+      { id: "update", label: "UPDATE", desc: "Modifying existing rows" },
+      { id: "upsert", label: "UPSERT", desc: "Insert or update on conflict" },
+      { id: "delete", label: "DELETE", desc: "Removing rows from tables" },
+    ],
+  },
+  {
+    title: "Querying Data",
+    icon: Table,
+    items: [
+      { id: "select", label: "SELECT", desc: "Retrieving data from tables" },
+      { id: "where", label: "WHERE", desc: "Filtering query results" },
+      { id: "order-by", label: "ORDER BY & LIMIT", desc: "Sorting and limiting results" },
+      { id: "joins", label: "JOINs", desc: "Combining data from multiple tables" },
+      { id: "group-by", label: "GROUP BY", desc: "Aggregating and summarizing data" },
+      { id: "subqueries", label: "Subqueries & CTEs", desc: "Nested queries and WITH clauses" },
+    ],
+  },
+  {
+    title: "SQL Expressions",
+    icon: FileText,
+    items: [
+      { id: "case", label: "CASE", desc: "Conditional logic in queries" },
+      { id: "coalesce", label: "COALESCE & NULLIF", desc: "Handling NULL values" },
+      { id: "string-functions", label: "String Functions", desc: "Text manipulation in SQL" },
+      { id: "json", label: "JSON / JSONB", desc: "Working with JSON data" },
+    ],
+  },
+  {
+    title: "Advanced",
+    icon: Layers,
+    items: [
+      { id: "transactions", label: "Transactions", desc: "BEGIN, COMMIT, ROLLBACK" },
+      { id: "window-functions", label: "Window Functions", desc: "Running totals, LAG, LEAD" },
+      { id: "set-operations", label: "Set Operations", desc: "UNION, INTERSECT, EXCEPT" },
+      { id: "views", label: "Views", desc: "Saved queries as virtual tables" },
     ],
   },
   {

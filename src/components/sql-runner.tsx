@@ -138,7 +138,27 @@ export function SQLRunner({ initialSql = "", hint }: SQLRunnerProps) {
       "ON", "DELETE", "UPDATE", "CASCADE", "SET", "ADD", "RENAME", "TO",
       "TYPE", "IF", "EXISTS", "SELECT", "FROM", "WHERE", "INSERT", "INTO", "VALUES",
       "AND", "OR", "ORDER", "BY", "ASC", "DESC", "LIMIT",
-      "BEGIN", "COMMIT", "ROLLBACK", "TRANSACTION"
+      "BEGIN", "COMMIT", "ROLLBACK", "TRANSACTION", "SAVEPOINT", "RELEASE",
+      "JOIN", "INNER", "LEFT", "RIGHT", "FULL", "OUTER", "CROSS", "NATURAL",
+      "GROUP", "HAVING", "SUM", "AVG", "COUNT", "MIN", "MAX",
+      "DISTINCT", "AS", "LIKE", "ILIKE", "IN", "BETWEEN",
+      "IS", "OFFSET", "FETCH", "NEXT", "ROWS", "ONLY",
+      "RETURNING", "TRUNCATE", "WITH", "RECURSIVE",
+      "CASE", "WHEN", "THEN", "ELSE", "END",
+      "OVER", "PARTITION", "WINDOW", "UNBOUNDED", "PRECEDING", "FOLLOWING", "CURRENT",
+      "RANK", "ROW_NUMBER", "DENSE_RANK", "NTILE",
+      "FIRST_VALUE", "LAST_VALUE", "NTH_VALUE", "PERCENT_RANK",
+      "LEAD", "LAG",
+      "UNION", "INTERSECT", "EXCEPT", "ALL", "ANY", "SOME",
+      "CAST", "COALESCE", "NULLIF",
+      "CONFLICT", "DO", "NOTHING",
+      "STRING_AGG", "ROUND",
+      "VIEW", "MATERIALIZED", "REFRESH", "CONCURRENTLY",
+      "UPPER", "LOWER", "INITCAP", "TRIM", "LTRIM", "RTRIM",
+      "SUBSTRING", "POSITION", "REPLACE", "REVERSE", "LENGTH",
+      "REGEXP_REPLACE", "REGEXP_MATCHES", "REGEXP",
+      "JSON", "JSONB", "JSONB_AGG", "JSONB_BUILD_OBJECT", "JSONB_SET",
+      "UUID", "ARRAY", "BYTEA", "TIMESTAMPTZ", "INTERVAL"
     ];
 
     // Build a single regex from all keywords
