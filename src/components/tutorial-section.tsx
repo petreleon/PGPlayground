@@ -12,9 +12,9 @@ interface TutorialSectionProps {
 
 export function TutorialSection({ id, title, description, children }: TutorialSectionProps) {
   return (
-    <section id={id} className="mb-16 scroll-mt-4">
+    <section id={id} className="mb-10 sm:mb-16 scroll-mt-14 lg:scroll-mt-4">
       <div className="mb-4">
-        <h2 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">{title}</h2>
+        <h2 className="text-xl sm:text-2xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">{title}</h2>
         <p className="text-zinc-600 dark:text-zinc-400">{description}</p>
       </div>
       {children}

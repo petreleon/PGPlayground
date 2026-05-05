@@ -17,8 +17,8 @@ export default function TutorialPage() {
   return (
     <div>
       <div className="mb-10">
-        <h1 className="text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-3">SQL Basics Tutorial</h1>
-        <p className="text-lg text-zinc-600 dark:text-zinc-400 mb-4">
+        <h1 className="text-2xl sm:text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-3">SQL Basics Tutorial</h1>
+        <p className="text-base sm:text-lg text-zinc-600 dark:text-zinc-400 mb-4">
           Learn PostgreSQL table operations right in your browser.
           Type SQL, press <strong>Run SQL</strong>, and watch your database change in real-time.
         </p>

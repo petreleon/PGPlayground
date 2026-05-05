@@ -2,7 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Database, Table, Key, Trash2, ChevronRight, FileText, Layers } from "lucide-react";
+import { Database, Table, Key, Trash2, ChevronRight, FileText, Layers, X } from "lucide-react";
+
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
 
 interface Topic {
   id: string;
@@ -103,11 +108,48 @@ const sections: Section[] = [
   },
 ];
 
-export function Sidebar() {
+export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
 
   return (
-    <aside className="w-72 h-screen bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 overflow-y-auto sticky top-0">
+    <>
+      {/* Desktop sidebar */}
+      <aside className="hidden lg:flex flex-col w-72 h-screen bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 overflow-y-auto sticky top-0 shrink-0">
+        <SidebarContent pathname={pathname} />
+      </aside>
+
+      {/* Mobile overlay */}
+      {isOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden" onClick={onClose}>
+          <div className="absolute inset-0 bg-black/40" />
+        </div>
+      )}
+
+      {/* Mobile sidebar drawer */}
+      <aside
+        className={`fixed top-0 left-0 z-50 h-full w-80 max-w-[85vw] bg-white dark:bg-zinc-900 border-r border-zinc-200 dark:border-zinc-800 overflow-y-auto transition-transform duration-300 ease-in-out lg:hidden ${
+          isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
+        }`}
+      >
+        {/* Close button */}
+        <div className="sticky top-0 z-10 flex justify-end p-2 bg-white dark:bg-zinc-900">
+          <button
+            onClick={onClose}
+            className="p-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"
+            aria-label="Close sidebar"
+          >
+            <X className="w-5 h-5 text-zinc-600 dark:text-zinc-400" />
+          </button>
+        </div>
+        <SidebarContent pathname={pathname} onNavigate={onClose} />
+      </aside>
+    </>
+  );
+}
+
+function SidebarContent({ pathname, onNavigate }: { pathname: string; onNavigate?: () => void }) {
+  return (
+    <>
       <div className="p-4 border-b border-zinc-200 dark:border-zinc-800">
         <Link href="/" className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold text-lg">
           <Database className="w-5 h-5" />
@@ -126,6 +168,7 @@ export function Sidebar() {
               </div>
               <Link
                 href={section.href}
+                onClick={onNavigate}
                 className={`flex flex-col px-3 py-2 rounded-md text-sm transition-colors ${
                   isActive
                     ? "bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900"
@@ -145,6 +188,6 @@ export function Sidebar() {
           );
         })}
       </nav>
-    </aside>
+    </>
   );
 }

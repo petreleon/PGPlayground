@@ -203,35 +203,37 @@ export function SQLRunner({ initialSql = "", hint }: SQLRunnerProps) {
             <button
               onClick={resetDatabase}
               disabled={loading || !ready}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 disabled:opacity-50 transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 text-sm rounded-md bg-zinc-100 text-zinc-700 hover:bg-zinc-200 dark:bg-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-700 disabled:opacity-50 transition-colors sm:px-3"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              Reset DB
+              <span className="hidden sm:inline">Reset DB</span>
             </button>
             <button
               onClick={runSQL}
               disabled={loading || !ready}
-              className="flex items-center gap-1.5 px-4 py-1.5 text-sm rounded-md bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors font-medium"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-md bg-emerald-600 text-white hover:bg-emerald-700 disabled:opacity-50 transition-colors font-medium sm:px-4"
             >
               {loading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
-              Run SQL
+              <span className="hidden sm:inline">Run SQL</span>
             </button>
           </div>
         </div>
         <div className="relative border border-zinc-200 dark:border-zinc-700 rounded-lg">
           <div
             ref={overlayRef}
-            className="p-3 text-sm font-mono whitespace-pre-wrap break-words overflow-auto min-h-[5rem] max-h-[20rem] pointer-events-none select-none"
+            className="absolute inset-0 z-0 p-3 text-sm font-mono whitespace-pre-wrap break-words overflow-hidden pointer-events-none select-none"
+            style={{ minHeight: "5rem", maxHeight: "15rem" }}
             dangerouslySetInnerHTML={{ __html: syntaxHighlighted || "\u00a0" }}
+            aria-hidden="true"
           />
           <textarea
             ref={textareaRef}
             value={sql}
             onChange={(e) => setSql(e.target.value)}
-            className="absolute inset-0 w-full h-full p-3 text-sm font-mono bg-transparent overflow-auto text-transparent caret-zinc-900 dark:caret-zinc-100 border-0 focus:outline-none focus:ring-0 resize-none"
+            className="block relative z-10 w-full p-3 text-sm font-mono bg-transparent overflow-y-auto text-transparent caret-zinc-900 dark:caret-zinc-100 border-0 focus:outline-none focus:ring-0 resize-none"
+            style={{ minHeight: "5rem", maxHeight: "15rem", whiteSpace: "pre-wrap", overflowWrap: "break-word", wordBreak: "break-word" }}
             placeholder="Write your SQL here..."
             spellCheck={false}
-            style={{ whiteSpace: "pre-wrap", overflowWrap: "break-word", wordBreak: "break-word" }}
           />
         </div>
         {hint && (
@@ -262,7 +264,7 @@ export function SQLRunner({ initialSql = "", hint }: SQLRunnerProps) {
           <div className="flex flex-col gap-4">
             {results.map((res, idx) => (
               <div key={idx} className="bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-lg overflow-hidden">
-                <div className="overflow-auto max-h-80">
+                <div className="overflow-auto max-h-60 sm:max-h-80">
                   <table className="w-full text-sm">
                     <thead className="bg-zinc-50 dark:bg-zinc-800 sticky top-0">
                       <tr>
@@ -315,11 +317,11 @@ export function SQLRunner({ initialSql = "", hint }: SQLRunnerProps) {
           <div className="flex flex-wrap gap-2">
             {dbState.tables.map((table) => (
               <div key={table} className="group relative">
-                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-mono bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400 border border-blue-100 dark:border-blue-900 cursor-help">
+                <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-mono bg-blue-50 text-blue-700 dark:bg-blue-950/50 dark:text-blue-400 border border-blue-100 dark:border-blue-900 cursor-pointer select-none">
                   {table}
                 </span>
                 {dbState.schema[table]?.columns.length > 0 && (
-                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block z-50 w-64">
+                  <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 hidden group-hover:block group-focus-within:block peer-hover:block z-50 max-w-[200px] sm:max-w-[256px] w-max">
                     <div className="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-lg shadow-lg p-2">
                       <div className="text-xs font-semibold text-zinc-700 dark:text-zinc-300 mb-1">{table} columns:</div>
                       <div className="flex flex-col gap-0.5">
