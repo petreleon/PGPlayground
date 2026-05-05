@@ -111,7 +111,6 @@ export function SQLRunner({ initialSql = "", hint }: SQLRunnerProps) {
       for (const table of tables) {
         await db.exec(`DROP TABLE IF EXISTS "${table}" CASCADE`);
       }
-      setSql("");
       setResults([]);
       setError(null);
       setAffectedRows(null);

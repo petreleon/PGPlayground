@@ -2,83 +2,103 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Database, Table, Key, Trash2, ChevronRight, FileText, Layers, Braces, Eye } from "lucide-react";
+import { Database, Table, Key, Trash2, ChevronRight, FileText, Layers } from "lucide-react";
 
-const sections = [
+interface Topic {
+  id: string;
+  label: string;
+}
+
+interface Section {
+  title: string;
+  icon: any;
+  href: string;
+  topics: Topic[];
+}
+
+const sections: Section[] = [
   {
     title: "Getting Started",
     icon: Database,
-    items: [
-      { id: "create-table", label: "CREATE TABLE", desc: "Creating your first table" },
-      { id: "data-types", label: "Data Types", desc: "Integer, text, boolean and more" },
+    href: "/tutorial/getting-started",
+    topics: [
+      { id: "create-table", label: "CREATE TABLE" },
+      { id: "data-types", label: "Data Types" },
     ],
   },
   {
     title: "ALTER TABLE",
     icon: Table,
-    items: [
-      { id: "add-column", label: "Add Column", desc: "Adding new columns to existing tables" },
-      { id: "rename-column", label: "Rename Column", desc: "Renaming existing columns" },
-      { id: "drop-column", label: "Drop Column", desc: "Removing columns from tables" },
-      { id: "alter-type", label: "Change Data Type", desc: "Modifying column data types" },
+    href: "/tutorial/alter-table",
+    topics: [
+      { id: "add-column", label: "Add Column" },
+      { id: "rename-column", label: "Rename Column" },
+      { id: "drop-column", label: "Drop Column" },
+      { id: "alter-type", label: "Change Data Type" },
     ],
   },
   {
     title: "Keys & Constraints",
     icon: Key,
-    items: [
-      { id: "primary-key", label: "Primary Keys", desc: "Creating and altering primary keys" },
-      { id: "foreign-key", label: "Foreign Keys", desc: "Creating and altering foreign keys" },
-      { id: "drop-constraint", label: "Drop Constraints", desc: "Removing keys and constraints" },
+    href: "/tutorial/keys",
+    topics: [
+      { id: "primary-key", label: "Primary Keys" },
+      { id: "foreign-key", label: "Foreign Keys" },
+      { id: "drop-constraint", label: "Drop Constraints" },
     ],
   },
   {
     title: "Writing Data",
     icon: Table,
-    items: [
-      { id: "insert", label: "INSERT INTO", desc: "Adding rows to tables" },
-      { id: "update", label: "UPDATE", desc: "Modifying existing rows" },
-      { id: "upsert", label: "UPSERT", desc: "Insert or update on conflict" },
-      { id: "delete", label: "DELETE", desc: "Removing rows from tables" },
+    href: "/tutorial/writing-data",
+    topics: [
+      { id: "insert", label: "INSERT INTO" },
+      { id: "update", label: "UPDATE" },
+      { id: "upsert", label: "UPSERT" },
+      { id: "delete", label: "DELETE" },
     ],
   },
   {
     title: "Querying Data",
     icon: Table,
-    items: [
-      { id: "select", label: "SELECT", desc: "Retrieving data from tables" },
-      { id: "where", label: "WHERE", desc: "Filtering query results" },
-      { id: "order-by", label: "ORDER BY & LIMIT", desc: "Sorting and limiting results" },
-      { id: "joins", label: "JOINs", desc: "Combining data from multiple tables" },
-      { id: "group-by", label: "GROUP BY", desc: "Aggregating and summarizing data" },
-      { id: "subqueries", label: "Subqueries & CTEs", desc: "Nested queries and WITH clauses" },
+    href: "/tutorial/querying-data",
+    topics: [
+      { id: "select", label: "SELECT" },
+      { id: "where", label: "WHERE" },
+      { id: "order-by", label: "ORDER BY & LIMIT" },
+      { id: "joins", label: "JOINs" },
+      { id: "group-by", label: "GROUP BY" },
+      { id: "subqueries", label: "Subqueries & CTEs" },
     ],
   },
   {
     title: "SQL Expressions",
     icon: FileText,
-    items: [
-      { id: "case", label: "CASE", desc: "Conditional logic in queries" },
-      { id: "coalesce", label: "COALESCE & NULLIF", desc: "Handling NULL values" },
-      { id: "string-functions", label: "String Functions", desc: "Text manipulation in SQL" },
-      { id: "json", label: "JSON / JSONB", desc: "Working with JSON data" },
+    href: "/tutorial/expressions",
+    topics: [
+      { id: "case", label: "CASE" },
+      { id: "coalesce", label: "COALESCE & NULLIF" },
+      { id: "string-functions", label: "String Functions" },
+      { id: "json", label: "JSON / JSONB" },
     ],
   },
   {
     title: "Advanced",
     icon: Layers,
-    items: [
-      { id: "transactions", label: "Transactions", desc: "BEGIN, COMMIT, ROLLBACK" },
-      { id: "window-functions", label: "Window Functions", desc: "Running totals, LAG, LEAD" },
-      { id: "set-operations", label: "Set Operations", desc: "UNION, INTERSECT, EXCEPT" },
-      { id: "views", label: "Views", desc: "Saved queries as virtual tables" },
+    href: "/tutorial/advanced",
+    topics: [
+      { id: "transactions", label: "Transactions" },
+      { id: "window-functions", label: "Window Functions" },
+      { id: "set-operations", label: "Set Operations" },
+      { id: "views", label: "Views" },
     ],
   },
   {
     title: "Cleanup",
     icon: Trash2,
-    items: [
-      { id: "drop-table", label: "DROP TABLE", desc: "Deleting tables from the database" },
+    href: "/tutorial/cleanup",
+    topics: [
+      { id: "drop-table", label: "DROP TABLE" },
     ],
   },
 ];
@@ -96,29 +116,34 @@ export function Sidebar() {
         <p className="text-xs text-zinc-500 mt-1">Interactive PostgreSQL Tutorial</p>
       </div>
       <nav className="p-2">
-        {sections.map((section) => (
-          <div key={section.title} className="mb-4">
-            <div className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
-              <section.icon className="w-3.5 h-3.5" />
-              {section.title}
+        {sections.map((section) => {
+          const isActive = pathname === section.href;
+          return (
+            <div key={section.title} className="mb-4">
+              <div className="flex items-center gap-2 px-3 py-2 text-xs font-semibold text-zinc-500 uppercase tracking-wider">
+                <section.icon className="w-3.5 h-3.5" />
+                {section.title}
+              </div>
+              <Link
+                href={section.href}
+                className={`flex flex-col px-3 py-2 rounded-md text-sm transition-colors ${
+                  isActive
+                    ? "bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900"
+                    : "hover:bg-zinc-100 dark:hover:bg-zinc-800 border border-transparent"
+                }`}
+              >
+                <div className="flex flex-col gap-0.5">
+                  {section.topics.map((topic) => (
+                    <div key={topic.id} className="flex items-center gap-2">
+                      <ChevronRight className="w-3 h-3 text-zinc-300 shrink-0" />
+                      <span className="text-xs text-zinc-500">{topic.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </Link>
             </div>
-            <div className="flex flex-col gap-0.5">
-              {section.items.map((item) => (
-                <a
-                  key={item.id}
-                  href={`#${item.id}`}
-                  className="flex items-center gap-2 px-3 py-2 rounded-md text-sm text-zinc-700 dark:text-zinc-300 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors group"
-                >
-                  <ChevronRight className="w-3.5 h-3.5 text-zinc-300 group-hover:text-zinc-500 transition-colors shrink-0" />
-                  <div className="flex flex-col">
-                    <span className="font-medium">{item.label}</span>
-                    <span className="text-xs text-zinc-400">{item.desc}</span>
-                  </div>
-                </a>
-              ))}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </nav>
     </aside>
   );
